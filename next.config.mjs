@@ -63,6 +63,7 @@ const config = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    unoptimized: true, // Unoptimized images
     contentDispositionType: 'attachment',
     remotePatterns: [
       {
@@ -82,7 +83,7 @@ const config = {
         source: '/info/pool/:address',
         destination: '/info/pools/:address',
       },
-    ]
+    ];
   },
   async headers() {
     return [
@@ -122,7 +123,7 @@ const config = {
           },
         ],
       },
-    ]
+    ];
   },
   async redirects() {
     return [
@@ -185,8 +186,8 @@ const config = {
         source: '/images/tokens/:address',
         destination: 'https://tokens.pancakeswap.finance/images/:address',
         permanent: false,
-      }
-    ]
+      },
+    ];
   },
   webpack: (webpackConfig, { webpack, isServer }) => {
     // tree shake sentry tracing
@@ -195,7 +196,7 @@ const config = {
         __SENTRY_DEBUG__: false,
         __SENTRY_TRACING__: false,
       }),
-    )
+    );
     if (!isServer && webpackConfig.optimization.splitChunks) {
       // webpack doesn't understand worker deps on quote worker, so we need to manually add them
       // https://github.com/webpack/webpack/issues/16895
@@ -203,18 +204,18 @@ const config = {
       webpackConfig.optimization.splitChunks.cacheGroups.workerChunks = {
         chunks: 'all',
         test(module) {
-          const resource = module.nameForCondition?.() ?? ''
-          return resource ? workerDeps.some((d) => resource.includes(d)) : false
+          const resource = module.nameForCondition?.() ?? '';
+          return resource ? workerDeps.some((d) => resource.includes(d)) : false;
         },
         priority: 31,
         name: 'worker-chunks',
         reuseExistingChunk: true,
-      }
+      };
     }
-    return webpackConfig
+    return webpackConfig;
   },
-}
+};
 
 export default withBundleAnalyzer(
   withVanillaExtract(withSentryConfig(withAxiom(withWebSecurityHeaders(config)), sentryWebpackPluginOptions)),
-)
+);
